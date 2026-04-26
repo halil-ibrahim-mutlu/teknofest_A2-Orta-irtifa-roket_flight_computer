@@ -1,0 +1,46 @@
+//baglantı şeması 
+//LoRa E32 TX  -> Arduino D2
+//LoRa E32 RX  -> Arduino D3
+//LoRa E32 GND -> Arduino GND
+//LoRa E32 VCC -> uygun besleme
+
+
+#include <SoftwareSerial.h>
+#define LORA_RX_PIN 2
+#define LORA_TX_PIN 3
+
+SoftwareSerial loraSerial(LORA_RX_PIN, LORA_TX_PIN);
+
+#define LORA_BAUD 9600
+String incomingData = "";
+
+void setup() {
+  Serial.begin(115200);
+  loraSerial.begin(LORA_BAUD);
+
+  Serial.println("===================================");
+  Serial.println("TEKNOFEST A2 YER ISTASYONU");
+  Serial.println("LoRa E32 Telemetri Alici");
+  Serial.println("===================================");
+}
+
+void loop() {
+  while (loraSerial.available()) {
+    char c = loraSerial.read();
+
+    if (c == '\n') {
+      incomingData.trim();
+
+      if (incomingData.length() > 0) {
+        Serial.print("[RX ");
+        Serial.print(millis());
+        Serial.print(" ms] ");
+        Serial.println(incomingData);
+      }
+
+      incomingData = "";
+    } else {
+      incomingData += c;
+    }
+  }
+}
